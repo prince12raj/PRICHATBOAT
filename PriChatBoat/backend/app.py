@@ -19,7 +19,7 @@ ORIGINS = [
 CORS(app, origins=ORIGINS)
 
 API_KEY = os.getenv("GEMINI_API_KEY", "")
-MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
+MODEL = os.getenv("GEMINI_MODEL", "gemini-3.8-flash")
 SYSTEM_PROMPT = (
     "You are PriChatBoat, a friendly and concise assistant. "
     "Answer clearly, and ask a short follow-up question only when it is needed."
@@ -95,7 +95,7 @@ def chat():
         return jsonify(reply=reply)
     except errors.APIError as e:
         app.logger.error("Gemini API error: %s", e)
-        return jsonify(error="The model could not answer right now. Try again."), 502
+        return jsonify(error=f"Gemini error {e.code}: {e.message}"), 502
     except Exception as e:  # noqa: BLE001
         app.logger.exception("Unexpected error: %s", e)
         return jsonify(error="Something went wrong on the server."), 500
