@@ -9,7 +9,14 @@ from google.genai import errors, types
 load_dotenv()
 
 app = Flask(__name__)
-CORS(app, origins=[os.getenv("FRONTEND_ORIGIN", "http://localhost:5173")])
+
+# FRONTEND_ORIGIN can hold one URL or several separated by commas.
+ORIGINS = [
+    o.strip().rstrip("/")
+    for o in os.getenv("FRONTEND_ORIGIN", "http://localhost:5173").split(",")
+    if o.strip()
+]
+CORS(app, origins=ORIGINS)
 
 API_KEY = os.getenv("GEMINI_API_KEY", "")
 MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
@@ -50,6 +57,11 @@ def to_gemini_contents(messages):
         )
         for m in messages
     ]
+
+
+@app.get("/")
+def home():
+    return jsonify(name="PriChatBoat API", status="running")
 
 
 @app.get("/api/health")
